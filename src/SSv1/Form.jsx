@@ -20,8 +20,10 @@ function Form() {
     traitment(data);
   };
 
-  const traitment = (thesalaireDB) => {
-    let salaireDB = Number(thesalaireDB.salaire.replace(",", "."));
+  const traitment = (NET) => {
+
+
+    let salaireDB = Number(NET.salaire.replace(",", "."));
     if (isNaN(salaireDB)) {
       alert("Veuillez entrer un salaire valide !");
       return;
