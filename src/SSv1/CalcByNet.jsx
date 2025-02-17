@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Swal from "sweetalert2";
 
 function CalcByNet() {
   const [Net, setNet] = useState("");
@@ -8,7 +9,12 @@ function CalcByNet() {
     e.preventDefault();
     const netValue = formatNumber(Net);
     if (netValue === null || netValue <= 0) {
-      alert("Veuillez entrer un salaire net valide !");
+      // alert("Veuillez entrer un salaire net valide !");
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Veuillez entrer un salaire net valide !",
+      });
       return;
     }
     rechercheSalaireBase(netValue);
@@ -26,8 +32,8 @@ function CalcByNet() {
   };
 
   const rechercheSalaireBase = (netSouhaite) => {
-    let minSalaire = netSouhaite / 7;
-    let maxSalaire = netSouhaite * 3;
+    let minSalaire = netSouhaite / 100;
+    let maxSalaire = netSouhaite * 100 ;
     const precision = 0.01;
     let calcResult = null;
 
@@ -59,7 +65,8 @@ function CalcByNet() {
       salaireDB + indemniteDeTransport + indemniteDePanier + indemDeplacement;
 
     // Cotisations salariales
-    const fraisPro = 2019.43;
+const fraisPro = salaireDB * 2.5 < 291667.291667 ? salaireDB * 2.5 : 291667.291667;
+
     const baseCNSS = Math.min(salaireDB, 6000);
     const RetenueCNSS = baseCNSS * 0.0448;
     const cotisationAMO = salaireDB * 0.0226;

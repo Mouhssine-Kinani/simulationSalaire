@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Swal from "sweetalert2";
 
 function CalcBySb() {
   const [data, setData] = useState({ salaire: "" });
@@ -13,7 +14,11 @@ function CalcBySb() {
     e.preventDefault();
     const salaireValue = data.salaire.trim();
     if (!salaireValue) {
-      alert("Veuillez entrer un salaire de base valide !");
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Veuillez entrer un salaire de base valide !",
+      });
       return;
     }
     calculer(salaireValue);
@@ -21,11 +26,25 @@ function CalcBySb() {
 
   const calculer = (salaireStr) => {
     let salaireDB = Number(salaireStr.replace(",", "."));
-    if (isNaN(salaireDB)) {
-      alert("Veuillez entrer un salaire de base valide !");
+    
+    if (isNaN(salaireDB) || salaireDB < 3000) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Veuillez entrer un salaire de base valide !",
+      });
+      
       return;
     }
-
+    if (salaireDB < 3045.96) { // SMIG au Maroc
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Le salaire de base doit être au moins de 3045,96 MAD (SMIG au Maroc).",
+      });
+      return;
+    }
+    
     // Indemnités
     const indemniteDeTransport = 500;
     const indemniteDePanier = 780;
@@ -39,8 +58,7 @@ function CalcBySb() {
     const RetenueCNSS = baseCNSS * 0.0448;
     const cotisationAMO = salaireDB * 0.0226;
     const CIMR = salaireDB * 0.06;
-    const totalCotisationSalariales =
-      RetenueCNSS + cotisationAMO + CIMR;
+    const totalCotisationSalariales = RetenueCNSS + cotisationAMO + CIMR;
 
     // Cotisations patronales
     const RetenueCNSSpatronal = baseCNSS * 0.0889;
@@ -97,7 +115,7 @@ function CalcBySb() {
     const CoutTotal =
       autresIndemnites + NAP + totalCotisationSalariales + TCSpatronal + ir;
 
-      const salaierParJour = CoutTotal / 20;
+    const salaierParJour = CoutTotal / 20;
     setResultat({
       salaireDeBase: salaireDB.toFixed(2),
       salaireBrut: SalaireBrutEnMAD.toFixed(2),
@@ -255,16 +273,16 @@ function CalcBySb() {
                 </td>
               </tr>
               <tr className="bg-gray-100">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    salaire par jour
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {resultat.salaierParJour} MAD
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                  salaire par jour
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {resultat.salaierParJour} MAD
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   الراتب يوميا
-                  </td>
-                </tr>
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>

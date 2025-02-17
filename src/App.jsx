@@ -22,6 +22,7 @@ function App() {
           </Link>
         </div>
       </nav>
+     
       <Routes>
         <Route path="/sb" element={<CalcBySb />} />
         <Route path="/net" element={<CalcByNet />} />
@@ -29,6 +30,8 @@ function App() {
         <Route path="*" element={<CalcBySb />} />
       </Routes>
     </Router>
+
+  
   );
 }
 
