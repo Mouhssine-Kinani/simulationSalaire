@@ -14,7 +14,6 @@ function CalcByNet() {
     rechercheSalaireBase(netValue);
   };
 
-  // Format number: accepts 9200, 9200.00, 9200,00, etc.
   const formatNumber = (input) => {
     let str = input.trim();
     if (str.includes(",")) {
@@ -26,9 +25,8 @@ function CalcByNet() {
     return parseFloat(str);
   };
 
-  // Recherche du salaire de base par dichotomie afin d'obtenir le NAP souhaité
   const rechercheSalaireBase = (netSouhaite) => {
-    let minSalaire = netSouhaite / 10;
+    let minSalaire = netSouhaite / 7;
     let maxSalaire = netSouhaite * 3;
     const precision = 0.01;
     let calcResult = null;
@@ -49,7 +47,7 @@ function CalcByNet() {
     setResultat({ error: "Aucun salaire de base trouvé pour ce net !" });
   };
 
-  // Fonction de calcul intégrant la dynamique de l'IR
+  // Fonction de calcul
   const calcule = (salaireDeBase) => {
     const salaireDB = parseFloat(salaireDeBase) || 0;
 
@@ -108,18 +106,21 @@ function CalcByNet() {
 
     // Net à Payer (NAP)
     const NAP = SalaireBrutEnMAD - (totalCotisationSalariales + ir);
+    const total = NAP + totalCotisationSalariales + TCSpatronal + ir;
 
     // Autres indemnités
-    const conge = 742.84;
-    const licenciement = 1609.48;
-    const dommageEtInteret = 715.32;
-    const preavis = 715.32;
-    const autresIndemnites =
-      conge + licenciement + dommageEtInteret + preavis;
+    const conge = (total / 26) * 1.5;
+    const licenciement = total * 1.5 * (3 / 36);
+    const dommageEtInteret = total * (1 / 2) * (3 / 36);
+    const preavis = total * (2 / 36);
+    const autresIndemnites = conge + licenciement + dommageEtInteret + preavis;
 
     // Coût Total
     const CoutTotal =
       autresIndemnites + NAP + totalCotisationSalariales + TCSpatronal + ir;
+
+    const salaierParJour = CoutTotal / 20;
+    // const prixDeVente = 6500;
 
     return {
       salaireDeBase: salaireDB.toFixed(2),
@@ -131,6 +132,7 @@ function CalcByNet() {
       nap: NAP.toFixed(2),
       autresIndemnites: autresIndemnites.toFixed(2),
       CoutTotal: CoutTotal.toFixed(2),
+      salaierParJour: salaierParJour.toFixed(2),
     };
   };
 
@@ -158,102 +160,141 @@ function CalcByNet() {
         </button>
       </form>
       {resultat && (
-        <>
+        <div className="mt-6 overflow-x-auto">
           {resultat.error ? (
-            <div className="mt-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
               {resultat.error}
             </div>
           ) : (
-            <div className="mt-6 overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th
-                      colSpan="2"
-                      className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
-                      Résultats du calcul
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  <tr>
-                    <th className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      Salaire de Base
-                    </th>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {resultat.salaireDeBase} MAD
-                    </td>
-                  </tr>
-                  <tr>
-                    <th className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      Salaire Brut
-                    </th>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {resultat.salaireBrut} MAD
-                    </td>
-                  </tr>
-                  <tr>
-                    <th className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      Total Cotisations Salariales
-                    </th>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {resultat.totalCotisationSalariales} MAD
-                    </td>
-                  </tr>
-                  <tr>
-                    <th className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      Cotisations Patronales
-                    </th>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {resultat.TCSpatronal} MAD
-                    </td>
-                  </tr>
-                  <tr>
-                    <th className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      Salaire Brut Imposable (SBI)
-                    </th>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {resultat.sbi} MAD
-                    </td>
-                  </tr>
-                  <tr>
-                    <th className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      Impôt sur le Revenu (IR)
-                    </th>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {resultat.IR} MAD
-                    </td>
-                  </tr>
-                  <tr>
-                    <th className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      Net à Payer (NAP)
-                    </th>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {resultat.nap} MAD
-                    </td>
-                  </tr>
-                  <tr>
-                    <th className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      Autres indemnités
-                    </th>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {resultat.autresIndemnites} MAD
-                    </td>
-                  </tr>
-                  <tr>
-                    <th className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      Coût Total
-                    </th>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {resultat.CoutTotal} MAD
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                    Libellé
+                  </th>
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                    Valeur
+                  </th>
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                    الترجمة
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                <tr className="bg-gray-100">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    Salaire de Base
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {resultat.salaireDeBase} MAD
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    الراتب الأساسي
+                  </td>
+                </tr>
+                <tr>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    Salaire Brut
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {resultat.salaireBrut} MAD
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    الراتب الإجمالي
+                  </td>
+                </tr>
+                <tr className="bg-gray-100">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    Total Cotisations Salariales
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {resultat.totalCotisationSalariales} MAD
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    إجمالي الاشتراكات العمالية
+                  </td>
+                </tr>
+                <tr>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    Cotisations Patronales
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {resultat.TCSpatronal} MAD
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    اشتراكات صاحب العمل
+                  </td>
+                </tr>
+                <tr className="bg-gray-100">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    Salaire Brut Imposable (SBI)
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {resultat.sbi} MAD
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    الراتب الخاضع للضريبة
+                  </td>
+                </tr>
+                <tr>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    Impôt sur le Revenu (IR)
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {resultat.IR} MAD
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    ضريبة الدخل
+                  </td>
+                </tr>
+                <tr className="bg-gray-100">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    Net à Payer (NAP)
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {resultat.nap} MAD
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    الصافي للدفع
+                  </td>
+                </tr>
+                <tr>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    Autres indemnités
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {resultat.autresIndemnites} MAD
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    بدلات أخرى
+                  </td>
+                </tr>
+                <tr className="bg-gray-100">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    Coût Total
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {resultat.CoutTotal} MAD
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    التكلفة الإجمالية
+                  </td>
+                </tr>
+                <tr className="bg-gray-100">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    salaire par jour
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {resultat.salaierParJour} MAD
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  الراتب يوميا
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           )}
-        </>
+        </div>
       )}
     </div>
   );
