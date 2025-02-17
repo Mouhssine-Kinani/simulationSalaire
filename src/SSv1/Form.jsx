@@ -20,7 +20,7 @@ function Form() {
     traitment(data);
   };
 
-  const traitment = (NET) => {
+  const traitment = (theSalaire) => {
 
 
     let salaireDB = Number(NET.salaire.replace(",", "."));
