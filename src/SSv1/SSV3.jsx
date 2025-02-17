@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function Test3() {
+function CalcByNet() {
   const [Net, setNet] = useState("");
   const [resultat, setResultat] = useState(null);
 
@@ -258,4 +258,4 @@ function Test3() {
   
 }
 
-export default Test3;
+export default CalcByNet;

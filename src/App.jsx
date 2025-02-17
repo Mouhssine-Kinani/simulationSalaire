@@ -1,11 +1,11 @@
 
 import './App.css'
-import Test3 from './SSv1/SSV3'
+import CalcByNet from './SSv1/SSV3'
 function App() {
 
   return (
    <>
-      <Test3/>
+      <CalcByNet/>
    </>
   )
 }
