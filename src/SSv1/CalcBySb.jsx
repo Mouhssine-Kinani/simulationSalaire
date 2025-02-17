@@ -1,59 +1,25 @@
 import { useState } from "react";
 
-function CalcByNet() {
-  const [Net, setNet] = useState("");
+function CalcBySb() {
+  const [data, setData] = useState({ salaire: "" });
   const [resultat, setResultat] = useState(null);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setData((prevData) => ({ ...prevData, [name]: value }));
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const netValue = formatNumber(Net);
-    if (netValue === null || netValue <= 0) {
-      alert("Veuillez entrer un salaire net valide !");
+    traitment(data);
+  };
+
+  const traitment = (thesalaireDB) => {
+    let salaireDB = Number(thesalaireDB.salaire.replace(",", "."));
+    if (isNaN(salaireDB)) {
+      alert("Veuillez entrer un salaire valide !");
       return;
     }
-    rechercheSalaireBase(netValue);
-  };
-
-  // Fonction de formatage pour accepter 9200 | 9200.00 | 9200,00 | 9200,02 | 9200.02
-  const formatNumber = (input) => {
-    let str = input.trim();
-    // Remplacer toutes les virgules par des points
-    if (str.includes(",")) {
-      str = str.replace(/,/g, ".");
-    }
-    // Valider que l'entrée est un nombre (au moins un chiffre, optionnellement un point suivi de chiffres)
-    if (!/^(\d+(\.\d+)?)$/.test(str)) {
-      return null;
-    }
-    return parseFloat(str);
-  };
-
-  // Recherche du salaire de base par dichotomie afin d'obtenir le NAP souhaité
-  const rechercheSalaireBase = (netSouhaite) => {
-    let minSalaire = netSouhaite / 2;
-    let maxSalaire = netSouhaite * 2;
-    const precision = 0.01;
-    let calcResult = null;
-
-    while (minSalaire <= maxSalaire) {
-      const midSalaire = (minSalaire + maxSalaire) / 2;
-      calcResult = calcule(midSalaire);
-      const netCalcule = parseFloat(calcResult.nap);
-      if (Math.abs(netCalcule - netSouhaite) < precision) {
-        setResultat(calcResult);
-        return;
-      } else if (netCalcule < netSouhaite) {
-        minSalaire = midSalaire + precision;
-      } else {
-        maxSalaire = midSalaire - precision;
-      }
-    }
-    setResultat({ error: "Aucun salaire de base trouvé pour ce net !" });
-  };
-
-  // Fonction de calcul qui intègre le calcul dynamique de l'IR
-  const calcule = (salaireDeBase) => {
-    const salaireDB = parseFloat(salaireDeBase) || 0;
 
     // Indemnités
     const indemniteDeTransport = 500;
@@ -68,7 +34,8 @@ function CalcByNet() {
     const RetenueCNSS = baseCNSS * 0.0448;
     const cotisationAMO = salaireDB * 0.0226;
     const CIMR = salaireDB * 0.06;
-    const totalCotisationSalariales = RetenueCNSS + cotisationAMO + CIMR;
+    const totalCotisationSalariales =
+      RetenueCNSS + cotisationAMO + CIMR;
 
     // Cotisations patronales
     const RetenueCNSSpatronal = baseCNSS * 0.0889;
@@ -116,17 +83,13 @@ function CalcByNet() {
     const licenciement = 1609.48;
     const dommageEtInteret = 715.32;
     const preavis = 715.32;
-    const CoutTotal =
-      conge +
-      licenciement +
-      dommageEtInteret +
-      preavis +
-      NAP +
-      totalCotisationSalariales +
-      TCSpatronal +
-      ir;
+    const autresIndemnites = conge + licenciement + dommageEtInteret + preavis;
 
-    return {
+    // Coût Total
+    const CoutTotal =
+      autresIndemnites + NAP + totalCotisationSalariales + TCSpatronal + ir;
+
+    setResultat({
       salaireDeBase: salaireDB.toFixed(2),
       salaireBrut: SalaireBrutEnMAD.toFixed(2),
       totalCotisationSalariales: totalCotisationSalariales.toFixed(2),
@@ -134,26 +97,28 @@ function CalcByNet() {
       sbi: sbi.toFixed(2),
       IR: ir.toFixed(2),
       nap: NAP.toFixed(2),
+      autresIndemnites: autresIndemnites.toFixed(2),
       CoutTotal: CoutTotal.toFixed(2),
-    };
+    });
   };
 
   return (
-    <>
-    
     <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow">
-        <h1>claculer salaire</h1>
+      <h1 className="text-xl font-bold mb-4 text-center">
+        Calculer par Salaire de Base
+      </h1>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
           <label className="block text-sm font-medium text-gray-700">
-            Salaire net souhaité
+            Salaire de Base :
           </label>
           <input
             type="text"
+            name="salaire"
+            value={data.salaire}
+            onChange={handleChange}
+            placeholder="Ex: 5000,00"
             className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:ring-indigo-500"
-            value={Net}
-            onChange={(e) => setNet(e.target.value)}
-            placeholder="Ex: 9200,00 ou 9200.00 ou 9200"
           />
         </div>
         <button
@@ -163,7 +128,6 @@ function CalcByNet() {
           Calculer
         </button>
       </form>
-  
       {resultat && (
         <>
           {resultat.error ? (
@@ -175,7 +139,10 @@ function CalcByNet() {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th colSpan="2" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th
+                      colSpan="2"
+                      className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
                       Résultats du calcul
                     </th>
                   </tr>
@@ -239,6 +206,14 @@ function CalcByNet() {
                   </tr>
                   <tr>
                     <th className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      Autres indemnités
+                    </th>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {resultat.autresIndemnites} MAD
+                    </td>
+                  </tr>
+                  <tr>
+                    <th className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                       Coût Total
                     </th>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -252,10 +227,7 @@ function CalcByNet() {
         </>
       )}
     </div>
-
-    </>
   );
-  
 }
 
-export default CalcByNet;
+export default CalcBySb;
