@@ -2,6 +2,7 @@ import './App.css'
 import CalcByNet from './SSv1/CalcByNet'
 import CalcBySb from './SSv1/CalcBySb';
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import SalaryCalculator from './SSv1/test';
 
 function App() {
   return (
@@ -20,12 +21,19 @@ function App() {
           >
             Calculer par Salaire Net
           </Link>
+          <Link
+            to="/netTest"
+            className="text-white px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700"
+          >
+            Calculer par Salaire Net (test)
+          </Link>
         </div>
       </nav>
      
       <Routes>
         <Route path="/sb" element={<CalcBySb />} />
         <Route path="/net" element={<CalcByNet />} />
+        <Route path="/netTest" element={<SalaryCalculator/>} />
         {/* Redirect to one of the calculators if no match */}
         <Route path="*" element={<CalcBySb />} />
       </Routes>

@@ -27,24 +27,25 @@ function CalcBySb() {
   const calculer = (salaireStr) => {
     let salaireDB = Number(salaireStr.replace(",", "."));
     
-    if (isNaN(salaireDB) || salaireDB < 3000) {
+
+    if (isNaN(salaireDB)) {
       Swal.fire({
         icon: "error",
         title: "Oops...",
         text: "Veuillez entrer un salaire de base valide !",
       });
-      
+
       return;
     }
-    if (salaireDB < 3045.96) { // SMIG au Maroc
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Le salaire de base doit être au moins de 3045,96 MAD (SMIG au Maroc).",
-      });
-      return;
-    }
-    
+    // if (salaireDB < 3045.96) { // SMIG au Maroc
+    //   Swal.fire({
+    //     icon: "error",
+    //     title: "Oops...",
+    //     text: "Le salaire de base doit être au moins de 3045,96 MAD (SMIG au Maroc).",
+    //   });
+    //   return;
+    // }
+
     // Indemnités
     const indemniteDeTransport = 500;
     const indemniteDePanier = 780;
@@ -53,7 +54,8 @@ function CalcBySb() {
       salaireDB + indemniteDeTransport + indemniteDePanier + indemDeplacement;
 
     // Cotisations salariales
-    const fraisPro = 2019.43;
+    const fraisPro =
+      salaireDB * 0.25 < 291667.291667 ? salaireDB * 0.25 : 291667.291667;
     const baseCNSS = Math.min(salaireDB, 6000);
     const RetenueCNSS = baseCNSS * 0.0448;
     const cotisationAMO = salaireDB * 0.0226;
@@ -61,26 +63,36 @@ function CalcBySb() {
     const totalCotisationSalariales = RetenueCNSS + cotisationAMO + CIMR;
 
     // Cotisations patronales
-    const RetenueCNSSpatronal = baseCNSS * 0.0889;
-    const contisationAMOpatronal = salaireDB * 0.0226;
+    const RetenueCNSSpatronal = baseCNSS * 0.0898;
+    const cotisationAMOpatronal = salaireDB * 0.0226;
     const participationAMOpatronal = salaireDB * 0.0185;
     const cotisationAllFAMpatronal = salaireDB * 0.064;
     const cotisationFormationProf = salaireDB * 0.016;
-    const mutuelle = salaireDB * 0.02;
+    const mutuelle = 150;
     const CIMRpatronal = salaireDB * 0.078;
     const ATpatronal = salaireDB * 0.009;
     const TCSpatronal =
       RetenueCNSSpatronal +
-      contisationAMOpatronal +
+      cotisationAMOpatronal +
       participationAMOpatronal +
       cotisationAllFAMpatronal +
       cotisationFormationProf +
       mutuelle +
       CIMRpatronal +
       ATpatronal;
-
+      console.log("__________________________");
+      console.log({
+        RetenueCNSSpatronal,
+        cotisationAMOpatronal,
+        participationAMOpatronal,
+        cotisationFormationProf,
+        mutuelle,
+        CIMRpatronal,
+        ATpatronal,
+        TCSpatronal});
+        console.log("__________________________");
     // Salaire Brut Imposable (SBI)
-    const sbi = salaireDB - (totalCotisationSalariales + fraisPro);
+    const sbi = salaireDB - fraisPro - totalCotisationSalariales;
 
     // Calcul de l'IR selon les tranches
     let ir;
@@ -131,7 +143,8 @@ function CalcBySb() {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow">
+
+    <div className="max-w-md lg:max-w-4xl mx-auto mt-10 p-6 bg-white rounded-lg shadow">
       <h1 className="text-xl font-bold mb-4 text-center">
         Calculer par Salaire de Base
       </h1>
@@ -157,8 +170,8 @@ function CalcBySb() {
         </button>
       </form>
       {resultat && (
-        <div className="mt-6 overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
+        <div className="mt-6 overflow-x-auto lg:overflow-x-visible">
+          <table className="w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">
@@ -283,6 +296,7 @@ function CalcBySb() {
                   الراتب يوميا
                 </td>
               </tr>
+              {/* ... autres lignes du tableau ... */}
             </tbody>
           </table>
         </div>
