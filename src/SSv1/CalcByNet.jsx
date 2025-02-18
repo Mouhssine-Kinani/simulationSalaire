@@ -30,7 +30,7 @@ function CalcByNet() {
 
     // Cotisations salariales
     const fraisPro =
-      salaireDB * 2.5 < 291667.291667 ? salaireDB * 2.5 : 291667.291667;
+      salaireDB * 0.25 < 291667.291667 ? salaireDB *0.25 : 291667.291667;
     const baseCNSS = Math.min(salaireDB, 6000);
     const RetenueCNSS = baseCNSS * 0.0448;
     const cotisationAMO = salaireDB * 0.0226;
@@ -38,12 +38,12 @@ function CalcByNet() {
     const totalCotisationSalariales = RetenueCNSS + cotisationAMO + CIMR;
 
     // Cotisations patronales
-    const RetenueCNSSpatronal = baseCNSS * 0.0889;
+    const RetenueCNSSpatronal = baseCNSS * 0.0898;
     const contisationAMOpatronal = salaireDB * 0.0226;
     const participationAMOpatronal = salaireDB * 0.0185;
     const cotisationAllFAMpatronal = salaireDB * 0.064;
     const cotisationFormationProf = salaireDB * 0.016;
-    const mutuelle = salaireDB * 0.02;
+    const mutuelle = 150;
     const CIMRpatronal = salaireDB * 0.078;
     const ATpatronal = salaireDB * 0.009;
     const TCSpatronal =
@@ -57,7 +57,7 @@ function CalcByNet() {
       ATpatronal;
 
     // Salaire Brut Imposable (SBI)
-    const sbi = salaireDB - (totalCotisationSalariales + fraisPro);
+    const sbi = salaireDB - totalCotisationSalariales - fraisPro;
 
     // Calcul de l'impôt sur le revenu (IR) par tranche
     let ir;
@@ -112,7 +112,7 @@ function CalcByNet() {
   const rechercheSalaireBase = (netSouhaite) => {
     let minSalaire = netSouhaite / 15;
     let maxSalaire = netSouhaite * 10;
-    const precision = 0.01;
+    const precision = 10;
     let calcResult = null;
 
     while (minSalaire <= maxSalaire) {

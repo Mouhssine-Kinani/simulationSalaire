@@ -80,17 +80,6 @@ function CalcBySb() {
       mutuelle +
       CIMRpatronal +
       ATpatronal;
-      console.log("__________________________");
-      console.log({
-        RetenueCNSSpatronal,
-        cotisationAMOpatronal,
-        participationAMOpatronal,
-        cotisationFormationProf,
-        mutuelle,
-        CIMRpatronal,
-        ATpatronal,
-        TCSpatronal});
-        console.log("__________________________");
     // Salaire Brut Imposable (SBI)
     const sbi = salaireDB - fraisPro - totalCotisationSalariales;
 
