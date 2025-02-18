@@ -27,13 +27,10 @@ function App() {
       <Routes>
         <Route path="/sb" element={<CalcBySb />} />
         <Route path="/net" element={<CalcByNet />} />
-
         {/* Redirect to one of the calculators if no match */}
         <Route path="*" element={<CalcBySb />} />
       </Routes>
     </BrowserRouter>
-
-  
   );
 }
 

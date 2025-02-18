@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Swal from "sweetalert2";
 
-function CalcByNet() {
+function CalcByNetV2() {
   const [netInput, setNetInput] = useState("");
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
@@ -311,4 +311,4 @@ function CalcByNet() {
   );
 }
 
-export default CalcByNet;
+export default CalcByNetV2;
