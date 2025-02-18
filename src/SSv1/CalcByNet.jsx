@@ -54,7 +54,8 @@ function CalcByNet() {
     chargeFixe.fraisProfessionel = fraisProfessionel;
 
     // Salaire de base imposable = salaire de base - cotisations - frais professionnels
-    const salaireBaseImposable = salaireBase - cotisationsSal - fraisProfessionel;
+    const salaireBaseImposable =
+      salaireBase - cotisationsSal - fraisProfessionel;
 
     // Calcul de l'impôt sur le revenu (IR) en fonction de tranches
     let ir;
@@ -169,6 +170,8 @@ function CalcByNet() {
           </label>
           <input
             type="text"
+            inputMode="decimal"
+            pattern="[0-9.,]*"
             className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:ring-indigo-500"
             value={netInput}
             onChange={(e) => setNetInput(e.target.value)}

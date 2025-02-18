@@ -26,7 +26,6 @@ function CalcBySb() {
 
   const calculer = (salaireStr) => {
     let salaireDB = Number(salaireStr.replace(",", "."));
-    
 
     if (isNaN(salaireDB)) {
       Swal.fire({
@@ -132,7 +131,6 @@ function CalcBySb() {
   };
 
   return (
-
     <div className="max-w-md lg:max-w-4xl mx-auto mt-10 p-6 bg-white rounded-lg shadow">
       <h1 className="text-xl font-bold mb-4 text-center">
         Calculer par Salaire de Base
@@ -148,6 +146,8 @@ function CalcBySb() {
             value={data.salaire}
             onChange={handleChange}
             placeholder="Ex: 5000,00"
+            inputMode="decimal"
+            pattern="[0-9.,]*"
             className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:ring-indigo-500"
           />
         </div>
